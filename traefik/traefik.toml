@@ -1,0 +1,33 @@
+defaultEntryPoints = ["https","http"]
+[entryPoints]
+ [entryPoints.http]
+ address = ":80"
+  [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/etc/traefik/traefik.crt"
+      keyFile = "/etc/traefik/traefik.key"
+
+################################################################
+# Web configuration backend
+################################################################
+[web]
+ address = ":8080"
+
+ CertFile = "/etc/traefik/traefik.crt"
+ KeyFile = "/etc/traefik/traefik.key"
+
+ [web.statistics]
+   RecentErrors = 10
+
+################################################################
+# Docker configuration backend
+################################################################
+[docker]
+domain = "docker.localhost"
+watch = true
+
+exposedbydefault = false

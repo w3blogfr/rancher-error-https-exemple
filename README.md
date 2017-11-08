@@ -20,3 +20,31 @@ first time, it's could work.
 After few seconds, you will have
 
 fetch.js:404 Mixed Content: The page at 'https://localhost/env/1a5/apps/stacks/1st1?which=infra' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://localhost/v2-beta/projects/1a5/services/1s1/?action=deactivate'. This request has been blocked; the content must be served over HTTPS.
+
+
+## Solution
+
+I found a solution by upgrading traefik to 1.4.2 to use custom header
+
+```
+[file]
+
+# rules
+[backends]
+  [backends.rancher]
+    [backends.rancher.servers.server1]
+    url = "http://rancher:8080"
+
+[frontends]
+  [frontends.rancher]
+  backend = "rancher"
+  passHostHeader = true
+    [frontends.rancher.headers.customrequestheaders]
+    X-Forwarded-Proto = "https"
+    [frontends.rancher.routes.test_1]
+    rule = "Host:localhost"
+```
+
+For the moment, traefik docker provider do not support customrequestheaders as label, so we need to back to a File Provider.
+
+Seem that label provider support will be solve with next version 1.5 (https://github.com/containous/traefik/issues/2028)
